@@ -12,7 +12,7 @@ function App() {
   // Fetch posts
   useEffect(() => {
     axios
-      .get("http://localhost:5002/api/blogs")
+      .get("https://plannitback.onrender.com/api/blogs")
       .then((res) => setPosts(res.data))
       .catch((err) => console.log(err));
   }, []);
@@ -21,7 +21,7 @@ function App() {
   const addPost = async () => {
     if (!title || !content) return;
     const newPost = { title, content };
-    await axios.post("http://localhost:5002/api/blogs/add", newPost);
+    await axios.post("https://plannitback.onrender.com/api/blogs/add", newPost);
     setTitle("");
     setContent("");
     window.location.reload();
@@ -29,7 +29,7 @@ function App() {
 
   // Delete a post
   const deletePost = async (id) => {
-    await axios.delete(`http://localhost:5002/api/blogs/${id}`);
+    await axios.delete(`https://plannitback.onrender.com/api/blogs/${id}`);
     window.location.reload();
   };
 
@@ -43,7 +43,7 @@ function App() {
   // Update a post
   const updatePost = async () => {
     if (!editingPost) return;
-    await axios.put(`http://localhost:5002/api/blogs/${editingPost._id}`, { title, content });
+    await axios.put(`https://plannitback.onrender.com/api/blogs/${editingPost._id}`, { title, content });
     setEditingPost(null);
     setTitle("");
     setContent("");
