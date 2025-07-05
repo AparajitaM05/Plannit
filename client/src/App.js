@@ -112,13 +112,27 @@ const App = ()=>{
   }
   const handleToggleSubTaskCompletion = async(taskId,subtaskId)=>{
     try{
-      // const task = mainTasks.find(t => t._id === taskId);
-      // const subtask = task.subTasks.find(s=> s._id===subtaskId);
+      const currentMaintask = mainTasks.find(t=>t._id === taskId);
+      const currentsubTask =  currentMaintask?.subTasks.find(s=> s._id=== subtaskId)
+
+      if(!currentsubTask){
+        console.error("Subtask not found for toggling completion")
+        return
+      }
+
+      const newCompletedStatus = !currentsubTask.completed
+
+      const response = await editsubTask(
+        taskId,
+        subtaskId,
+        {completed: newCompletedStatus}
+      )
+     
 
       setMainTasks(prev=>prev.map(t=> t._id ===taskId?{
         ...t,
         subTasks: t.subTasks.map(s=>
-          s._id === subtaskId ? {...s, completed: !s.completed}: s
+          s._id === subtaskId ? {...s, completed: response.data.completed}: s
         )
       }: t
     ))
