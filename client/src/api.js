@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // const BASE_URL = "http://localhost:5003/api";
-const BASE_URL = "https://plannerback-1.onrender.com/api";
+const BASE_URL = "https://plannerback-1.onrender.com";
 
 //add the main task
 export const addMainTask = (taskData)=> axios.post(`${BASE_URL}/tasks`,taskData)
