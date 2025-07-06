@@ -1,10 +1,23 @@
 import React,{useEffect, useState} from 'react'
 import { addMainTask, addSubTask, getallTask, editMainTask, editsubTask, deleteTask } from './api';
+import ProgressBar from "@ramonak/react-progress-bar";
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 const App = ()=>{
   const [mainTasks, setMainTasks] = useState([]);
   const [subTasks, setSubTasks] = useState({});
   const [taskText, setTaskTexts] = useState("");
+
+  const calculateProgress = (task)=>{
+    if(!task.subTasks || task.subTasks.length===0){
+      return task.completed? 100: 0;
+    }
+    const completedSubtasks = task.subTasks.filter(s=>s.completed).length
+    const totalSubTasks = task.subTasks.length;
+    return Math.round((completedSubtasks/totalSubTasks)*100)
+
+  }
 
   const handleAddTask = async()=>{
     if(!taskText.trim()) return;
@@ -195,8 +208,11 @@ const App = ()=>{
           <p style={{textAlign:'center',color:'#666'}}>No tasks yet. Add one above!</p>
         ):(
           mainTasks.map(task => (
+
+            
             <div key = {task._id}>
               {/* Main task Row */}
+
               <div  style={{display: 'flex', alignItems:'center', justifyContent:'space-between',width:'100%'}}>
                 {/* Check mark button for main task */}
            
@@ -227,7 +243,25 @@ const App = ()=>{
                  }}>
                   {task.title}
                 </span>
+
+                {/* progress tracking circle */}
+                <div style={{ width: 50, height: 50, marginRight: '15px', flexShrink: 0 }}> {/* Adjusted size and margin */}
+                    <CircularProgressbar
+                        value={calculateProgress(task)}
+                        text={`${calculateProgress(task)}%`}
+                        styles={buildStyles({
+                            // Text color
+                            textColor: '#FFAC4B',
+                            // Trail color (the part of the circle that's not filled)
+                            trailColor: '#e0e0e0',
+                            // Path color (the filled part of the circle)
+                            pathColor: '#FFAC4B',
+                        })}
+                    />
+                </div>
+
                 
+               
           
 
                 {/* Dropdown and add Subtask Buttons */}
@@ -374,5 +408,7 @@ const App = ()=>{
     </div>
   )
 
+
 }
+
 export default App

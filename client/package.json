@@ -4,12 +4,15 @@
   "private": true,
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@ramonak/react-progress-bar": "^5.4.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^13.5.0",
+    "@uiw/react-heat-map": "^2.3.3",
     "axios": "^1.7.9",
     "react": "^19.0.0",
+    "react-circular-progressbar": "^2.2.0",
     "react-dom": "^19.0.0",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
@@ -19,7 +22,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-      "deploy": "vercel --prod"
+    "deploy": "vercel --prod"
   },
   "eslintConfig": {
     "extends": [
