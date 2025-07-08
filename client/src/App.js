@@ -1,13 +1,24 @@
 import React,{useEffect, useState} from 'react'
-import { addMainTask, addSubTask, getallTask, editMainTask, editsubTask, deleteTask } from './api';
-import ProgressBar from "@ramonak/react-progress-bar";
+import { addMainTask, addSubTask, getallTask, editMainTask, editsubTask, deleteTask , getCompletedSubtasks} from './api';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import CalendarHeatmap from 'react-calendar-heatmap';
+import 'react-calendar-heatmap/dist/styles.css';
+import { Tooltip } from "react-tooltip";
+
+
 
 const App = ()=>{
   const [mainTasks, setMainTasks] = useState([]);
   const [subTasks, setSubTasks] = useState({});
   const [taskText, setTaskTexts] = useState("");
+  const [heatMapData, setHeatMapData] = useState([]);
+
+  function shiftDate(date,numDays){
+    const newDate = new Date(date);
+    newDate.setDate(newDate.getDate()+numDays)
+    return newDate
+  }
 
   const calculateProgress = (task)=>{
     if(!task.subTasks || task.subTasks.length===0){
@@ -126,20 +137,29 @@ const App = ()=>{
   const handleToggleSubTaskCompletion = async(taskId,subtaskId)=>{
     try{
       const currentMaintask = mainTasks.find(t=>t._id === taskId);
-      const currentsubTask =  currentMaintask?.subTasks.find(s=> s._id=== subtaskId)
-
+      console.log("CurrentMain task: ", currentMaintask)
+      const currentsubTask =  currentMaintask?.subTasks.find(s=> s._id === subtaskId)
+      console.log("Current Sub task: ", currentsubTask)
       if(!currentsubTask){
         console.error("Subtask not found for toggling completion")
         return
       }
 
       const newCompletedStatus = !currentsubTask.completed
+    
+      console.log(taskId,subtaskId)
 
       const response = await editsubTask(
         taskId,
         subtaskId,
         {completed: newCompletedStatus}
       )
+
+      if (!response || !response.data) {
+        console.error("❌ Backend response invalid", response);
+        return;
+      }
+      console.log(response.data)
      
 
       setMainTasks(prev=>prev.map(t=> t._id ===taskId?{
@@ -174,7 +194,21 @@ const App = ()=>{
 
   },[])
 
+useEffect(()=>{
+  const fetchCompletedSubtasks = async () =>{
+    try{
+      const res = await getCompletedSubtasks()
+      console.log("Completed subtasks data array: ",res.data)
+      setHeatMapData(res.data)
 
+
+    }catch(err){
+      console.log("Error fetching subtasks")
+    }
+
+  }
+  fetchCompletedSubtasks()
+},[])
 
   return(
     <div style={{fontFamily:'"Inter",sans-serif', maxWidth:'600px',margin:'40px auto',padding:'20px',border:'1px solid #e0e0e0', borderRadius:'10px',boxShadow:'0 4px 8px rgba(0,0,0,0.1)',backgroundColor:'#ffffff'}}>
@@ -357,7 +391,7 @@ const App = ()=>{
 
                           {/* Checkmark Button of subtask */}
                           <button
-                          onClick={()=>handleToggleSubTaskCompletion(task._id,subtask._id,)}
+                          onClick={()=>handleToggleSubTaskCompletion(task._id, subtask._id,)}
                            style={{
                             width: '20px',
                             height: '20px',
@@ -404,8 +438,36 @@ const App = ()=>{
         )}
       </div>
 
-    
+      <div>
+      
     </div>
+        <CalendarHeatmap
+        startDate={shiftDate(new Date(), -365)} // last 90 days
+        endDate={new Date()}
+        values={heatMapData}  // [{ date: '2025-07-08', count: 2 }, ...]
+        classForValue={(value) => {
+          if (!value) return "color-empty";
+          if (value.count >= 4) return "color-scale-4";
+          if (value.count >= 3) return "color-scale-3";
+          if (value.count >= 2) return "color-scale-2";
+          return "color-scale-1";
+        }}
+        tooltipDataAttrs={(value) => {
+          if (!value || !value.date) {
+            return { "data-tip": "No tasks completed!" };
+          }
+          return {
+            "data-tooltip-id": "heatmap-tooltip",
+      "data-tooltip-content": `${value.count} task${value.count > 1 ? "s" : ""} completed on ${value.date}`,
+          };
+        }}
+        showWeekdayLabels
+        />
+
+
+    <Tooltip id="heatmap-tooltip" />
+    </div>
+    
   )
 
 
