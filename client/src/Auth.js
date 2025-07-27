@@ -1,12 +1,27 @@
 import React from "react";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { authenticateUser } from "./api";
 // import { set } from "mongoose";
 
 const Auth = ({onLoginSuccess})=>{
-    const [id,setId]= useState();
-    const[password, setPassword]= useState();
+    const [id,setId]= useState("");
+    const[password, setPassword]= useState("");
     const[error,setError] = useState();
+    useEffect(() => {
+        fetch("https://plannerback-1.onrender.com/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            id: "Aparajita",
+            password: "test@123"
+          })
+        })
+          .then(res => res.json())
+          .then(data => console.log("User registered:", data))
+          .catch(err => console.error("Register failed:", err));
+      }, []);
 
     const handleLogin= async(e)=>{
         e.preventDefault();
@@ -22,6 +37,7 @@ const Auth = ({onLoginSuccess})=>{
 
             }else{
                 setError("Invalid credentials")
+                console.error("❌ Login failed:", error.response?.data || error.message);
             }
 
 
@@ -33,7 +49,7 @@ const Auth = ({onLoginSuccess})=>{
 
     return (
         <div style={{fontFamily:'"Inter",sans-serif', maxWidth:'600px',margin:'40px auto',padding:'20px',border:'1px solid #e0e0e0', borderRadius:'10px',boxShadow:'0 4px 8px rgba(0,0,0,0.1)',backgroundColor:'#ffffff'}}>
-            <h2>Hi,Please login and continue:)</h2>
+            <h2>Hi, Please login and continue:)</h2>
             <form onSubmit={handleLogin}>
                 <div style={{ marginBottom: "15px" }}>
                     <input

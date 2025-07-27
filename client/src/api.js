@@ -4,7 +4,7 @@ import axios from "axios";
 const BASE_URL = "https://plannerback-1.onrender.com";
 
 //authenticate user
-export const authenticateUser = (id,pass)=>axios.post(`${BASE_URL}/auth`,{ id: id, password: pass })
+export const authenticateUser = (id,password)=>axios.post(`${BASE_URL}/auth`,{ id: id, password: password})
 
 //add the main task
 export const addMainTask = (taskData)=> axios.post(`${BASE_URL}/tasks`,taskData)
